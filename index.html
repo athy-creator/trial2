@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2026</title>
+    <link href="https://fonts.cdnfonts.com/css/minecraft-ia" rel="stylesheet">
+    <style>
+        :root { --st-red: #ff0000; --glow: 0 0 20px #ff0000; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #010101; color: white; font-family: 'Minecraft', sans-serif; overflow: hidden; }
+        
+        /* VHS Lines & Glitch */
+        .vhs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%); z-index: 1000; background-size: 100% 4px; pointer-events: none; }
+        .glitch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; opacity: 0.4; }
+        .invert { filter: invert(1); }
+
+        .screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; position: relative; z-index: 10; }
+        .hidden { display: none !important; }
+
+        /* Phase 1: Rocket */
+        .rocket { width: 140px; position: absolute; bottom: 40px; transition: 2s cubic-bezier(0.47, 0, 0.745, 0.715); }
+        .shake { animation: shake 0.2s infinite; }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } 100% { transform: translate(2px, 2px); } }
+        
+        /* Buttons */
+        .st-btn { background: black; border: 2px solid var(--st-red); color: var(--st-red); padding: 15px 30px; font-family: 'Minecraft'; cursor: pointer; box-shadow: var(--glow); text-transform: uppercase; margin: 10px; }
+        .st-btn:hover { background: var(--st-red); color: white; }
+
+        /* Letter Styling */
+        #letter-box { max-width: 650px; text-align: left; line-height: 1.6; font-size: 1.1rem; padding: 30px; border-left: 3px solid var(--st-red); background: rgba(0,0,0,0.4); }
+
+        /* Alphabet Wall */
+        #wall-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('wall.jpg') no-repeat center center; background-size: contain; opacity: 0.3; transition: opacity 2s; }
+        .bulb { position: absolute; width: 30px; height: 30px; border-radius: 50%; opacity: 0; filter: blur(12px); box-shadow: 0 0 30px white; }
+
+        /* Closing Screen */
+        .silhouette { width: 100%; height: 100%; background: url('https://wallpaperaccess.com/full/1510444.jpg') no-repeat center bottom; background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="vhs"></div>
+    <div id="glitch-screen" class="glitch-overlay"></div>
+
+    <audio id="sfx-static" src="https://actions.google.com/sounds/v1/science_fiction/radio_static.ogg"></audio>
+    <audio id="sfx-buzz" src="https://actions.google.com/sounds/v1/science_fiction/glitch_low_frequency.ogg"></audio>
+    <audio id="st-music" loop src="https://orangefreesounds.com/wp-content/uploads/2020/09/Stranger-things-theme-song.mp3"></audio>
+
+    <div id="phase1" class="screen">
+        <button id="start-btn" class="st-btn" style="font-size: 2rem;">PRESS START</button>
+        <h1 id="countdown" class="hidden" style="font-size: 6rem; color: var(--st-red);">3</h1>
+        <div id="ny-reveal" class="hidden">
+            <h1 style="color:var(--st-red); font-size: 4rem; text-shadow: var(--glow); margin:0;">HAPPY NEW YEAR 2026</h1>
+            <p style="letter-spacing: 2px;">"it's not the end, but the end of beginning"</p>
+        </div>
+        <img src="rocket.jpg" id="rocket-img" class="rocket">
+    </div>
+
+    <div id="phase2" class="screen hidden">
+        <div id="bridge-text" style="color: #00ff00; font-family: monospace; font-size: 1.4rem; max-width: 600px; text-align: left;"></div>
+        <button id="pick-up" class="st-btn hidden" style="border-color: #00ff00; color: #00ff00; margin-top: 30px;">[ PICK UP ]</button>
+    </div>
+
+    <div id="phase3" class="screen hidden">
+        <h2 id="q-text" style="margin-bottom: 30px;"></h2>
+        <div id="options"></div>
+        <div id="robin-result" class="hidden" style="margin-top: 30px;">
+            <div style="position:relative; width: 280px; border: 4px solid white;">
+                <img src="suck.jpg" style="width:100%;">
+                <div id="board-text" style="position:absolute; top:65%; left:50%; transform:translate(-50%,-50%); background:white; color:red; padding:5px 10px; font-size:24px; border:2px solid black; font-weight:bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="phase4" class="screen hidden" style="background: radial-gradient(circle, #200 0%, #000 100%);">
+        <div id="letter-box"></div>
+        <button id="proceed-wall" class="st-btn hidden" style="margin-top: 30px;">I LOVE YOU</button>
+    </div>
+
+    <div id="phase6" class="hidden">
+        <div id="wall-bg"></div>
+        <div id="bulb-container"></div>
+        <div id="final-card" class="screen hidden" style="background: black; width:100%; position:fixed; top:0;">
+            <div class="silhouette">
+                <h2 style="color:var(--st-red); margin:0;">CHAPTER ONE</h2>
+                <h1 style="font-size: 5rem; margin:10px 0;">THE NEW YEAR</h1>
+                <p style="font-style: italic; max-width: 500px;">“Something is coming... something hungry for more adventures with you.”</p>
+                <h2 style="color:var(--st-red); letter-spacing: 8px; margin-top: 40px;">2026: TO BE CONTINUED</h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('st-music');
+        const sfx = document.getElementById('sfx-static');
+        const buzz = document.getElementById('sfx-buzz');
+
+        function triggerGlitch(duration = 200, invert = true) {
+            const g = document.getElementById('glitch-screen');
+            if(invert) document.body.classList.add('invert');
+            g.style.display = 'block';
+            sfx.play();
+            setTimeout(() => {
+                g.style.display = 'none';
+                document.body.classList.remove('invert');
+            }, duration);
+        }
+
+        // PHASE 1
+        document.getElementById('start-btn').onclick = function() {
+            this.style.display = 'none';
+            music.play();
+            let c = 3;
+            const cd = document.getElementById('countdown');
+            cd.classList.remove('hidden');
+            const timer = setInterval(() => {
+                cd.innerText = c;
+                if(c === 0) {
+                    clearInterval(timer);
+                    cd.classList.add('hidden');
+                    const r = document.getElementById('rocket-img');
+                    r.classList.add('shake');
+                    setTimeout(() => {
+                        r.style.bottom = '150vh';
+                        setTimeout(() => {
+                            triggerGlitch(400);
+                            document.getElementById('ny-reveal').classList.remove('hidden');
+                            setTimeout(startPhase2, 3500);
+                        }, 1200);
+                    }, 1000);
+                }
+                c--;
+            }, 1000);
+        };
+
+        // PHASE 2
+        function startPhase2() {
+            document.getElementById('phase1').classList.add('hidden');
+            document.getElementById('phase2').classList.remove('hidden');
+            let m = "...Can you hear me? > Before this year moves too fast, there’s something I wanted to say. > bzzt... Ayush, are you there?";
+            let i = 0;
+            function type() {
+                if(i < m.length) {
+                    document.getElementById('bridge-text').innerHTML += m[i] === ">" ? "<br><br>" : m[i];
+                    i++; setTimeout(type, 50);
+                } else document.getElementById('pick-up').classList.remove('hidden');
+            }
+            type();
+        }
+
+        document.getElementById('pick-up').onclick = () => { triggerGlitch(); startPhase3(); };
+
+        // PHASE 3
+        const trivia = [
+            { q: "What's my favourite colour?", a: "Blue", o: ["Red", "Blue", "Yellow"] },
+            { q: "When did we start dating?", a: "18th of Dec", o: ["10th", "18th of Dec"] },
+            { q: "Will you be with me forever?", a: "Yes", o: ["Yes", "Yes"] }
+        ];
+        let cur = 0;
+
+        function startPhase3() {
+            document.getElementById('phase2').classList.add('hidden');
+            document.getElementById('phase3').classList.remove('hidden');
+            loadQ();
+        }
+
+        function loadQ() {
+            let d = trivia[cur];
+            document.getElementById('q-text').innerText = d.q;
+            document.getElementById('options').innerHTML = "";
+            document.getElementById('robin-result').classList.add('hidden');
+            d.o.forEach(opt => {
+                let b = document.createElement('button');
+                b.className = 'st-btn'; b.innerText = opt;
+                b.onclick = () => {
+                    let win = opt === d.a;
+                    document.getElementById('robin-result').classList.remove('hidden');
+                    let board = document.getElementById('board-text');
+                    board.innerText = win ? "YOU RULE" : "YOU SUCK";
+                    board.style.color = win ? "blue" : "red";
+                    if(win) {
+                        cur++;
+                        setTimeout(() => cur < trivia.length ? loadQ() : startPhase4(), 1500);
+                    }
+                };
+                document.getElementById('options').appendChild(b);
+            });
+        }
+
+        // PHASE 4
+        function startPhase4() {
+            triggerGlitch(500);
+            document.getElementById('phase3').classList.add('hidden');
+            document.getElementById('phase4').classList.remove('hidden');
+            let m = "Hey Dumbo, > I know we didn’t start this year together, but I want to make sure I end this one—and every single one after—right by your side. > Everything already feels so right. It feels like something I’ve been waiting for through every 'level' of my life. > We still have our list: the Harry Potter marathons and that perfect date. > Friends don't lie, and I'm never letting you go. > I love you, always.";
+            let i = 0;
+            function type() {
+                if(i < m.length) {
+                    document.getElementById('letter-box').innerHTML += m[i] === ">" ? "<br><br>" : m[i];
+                    i++; setTimeout(type, 55);
+                } else {
+                    document.getElementById('proceed-wall').classList.remove('hidden');
+                }
+            }
+            type();
+        }
+
+        // PHASE 6
+        document.getElementById('proceed-wall').onclick = () => {
+            buzz.play();
+            document.getElementById('phase4').style.opacity = '0.5';
+            setTimeout(() => {
+                triggerGlitch(300, false);
+                document.getElementById('phase4').classList.add('hidden');
+                document.getElementById('phase6').classList.remove('hidden');
+                runWall();
+            }, 1000);
+        };
+
+        function runWall() {
+            const lights = [
+                { t: '43%', l: '6%', c: 'white' }, { t: '43%', l: '36%', c: 'red' }, 
+                { t: '43%', l: '66%', c: 'blue' }, { t: '72%', l: '43%', c: 'yellow' }, 
+                { t: '15%', l: '54%', c: 'green' }, { t: '72%', l: '66%', c: 'white' }, 
+                { t: '43%', l: '66%', c: 'blue' }, { t: '72%', l: '30%', c: 'red' }
+            ];
+            lights.forEach((b, i) => {
+                setTimeout(() => {
+                    let d = document.createElement('div');
+                    d.className = 'bulb';
+                    d.style.top = b.t; d.style.left = b.l;
+                    d.style.backgroundColor = b.c;
+                    d.style.boxShadow = `0 0 50px 20px ${b.c}`;
+                    document.getElementById('bulb-container').appendChild(d);
+                    d.style.opacity = "1";
+                    setTimeout(() => d.style.opacity = "0.3", 800);
+                }, i * 1100);
+            });
+            setTimeout(() => {
+                document.getElementById('final-card').classList.remove('hidden');
+            }, 11500);
+        }
+    </script>
+</body>
+</html>
